@@ -3,9 +3,9 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/time.h>
+#include <time.h>
 
 typedef struct{
-  int dimension;
   int vehicles;
   int capacity;
 }info_test;
@@ -13,40 +13,99 @@ typedef struct{
 typedef struct{
     int *rota;
     int custo;
+    int cap;
 }veiculo;
 
-void createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda){
+
+void shift(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda,int *count){
+    int i, j, j2, k, l, l2, m;
+    int ver1, ver2;
+    for(i = 0; i < description.vehicles; i++){
+        for(j = 1; j < count[i]; j++){
+            for(k = 0; k < description.vehicles; k++){
+                if(i != k && demanda[j] <= car[k].cap){
+                    if(count[k] != 2){
+                        for(l = 1 , l2 = 2; l2 < count[k] ; l++, l2++){
+                            //ALTERAR A ROTA DE ORIGEM
+                            ver1 = car[i].custo;
+                            j2 = car[i].rota[j];
+                            ver1 -= matriz[car[i].rota[j-1]][j2];//antes
+                            ver1 -= matriz[j2][car[i].rota[j+1]];//dps
+                            ver1 += matriz[car[i].rota[j-1]][car[i].rota[j+1]];
+                            for(m = j; m < count[i]-1; m++){
+                                car[i].rota[m] = car[i].rota[m+1];
+                            } 
+                            count[i]--;
+
+                            //ALTERAR A ROTA DE DESTINO
+                            ver2 = car[k].custo;
+                            ver2 -= matriz[car[k].rota[l]][car[k].rota[l2]];
+                            ver2 += matriz[car[k].rota[l]][j2];
+                            ver2 += matriz[j2][car[k].rota[l2]];
+
+                                         
+                        }
+                    }
+                    else{
+                            
+                    }
+                  
+                }
+            }
+        }
+    }
+}
+
+
+void createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda, int *count, int maior[][3]){
     int disp[numVertices];
     int contRota = 0;
-    int i = 0, j, x, w = 1, count[description.vehicles];
-    int cap[description.vehicles];
+    int i = 0, j, x, w = 1;
 
     for(i = 0; i < numVertices; i++) disp[i] = 1;
 
     for(i = 0; i < description.vehicles; i++){
-        cap[i] = description.capacity;
+        car[i].cap = description.capacity;
         car[i].rota[0] = 0;
         count[i] = 1;
         car[i].custo = 0;
+        maior[i][0] = 0;
     }
     i = 0;
     while (i < description.vehicles){
+        printf("Carro[%d]: ", i);
         while(w < numVertices){
             //printf("demanda do vertice: %d vs capacidade do veiculo %d: %d\n", demanda[w], i, cap[i]);
-            if(disp[w] && demanda[w] <= cap[i]){ 
+
+            if(disp[w] && demanda[w] <= car[i].cap){ 
                 car[i].rota[count[i]] = w;
                 disp[w] = 0;
-                car[i].custo += matriz[car[i].rota[count[i]-1]][w];
-                //printf("cap do veiculo %d antes %d\n",i, cap[i]);
-                cap[i] = cap[i] - demanda[w];
-                //printf("cap do veiculo %d depois %d\n",i, cap[i]);
+                x = car[i].rota[count[i]-1];
+                //printf(" aresta %d-%d: %d\n",x,w,matriz[x][w]);
+                car[i].custo += matriz[x][w];
+                //printf("cap do veiculo %d antes %d\n",i, car[i].cap);
+                car[i].cap = car[i].cap - demanda[w];
+                //printf("cap do veiculo %d depois %d\n",i, car[i].cap);
             //  printf("carro[%d].rota[%d] = %d \n",i, count[i], car[i].rota[count[i]]);
             //   puts("");
+            
+                if(matriz[x][w]>maior[i][0]){
+                    maior[i][0]=matriz[x][w];
+                    maior[i][1]=x;
+                    maior[i][2]=w;
+                    printf("Maior peso: %d, arestas: %d-%d\n", maior[i][0], maior[i][1], maior[i][2]);
+
+                }
+                
                 count[i]++;
+                
+                    
+
                 
             }
             w++;
         }
+        puts("");
         w = 1;
         i++;
     }
@@ -54,21 +113,19 @@ void createRota(  veiculo *car, info_test description, int numVertices, int matr
     for(i = 0; i < description.vehicles; i++){
  
         car[i].rota[count[i]] = 0;
+        car[i].custo += matriz[car[i].rota[count[i]-1]][0];
     } 
-
+    
+    //SO PRA PRINTAR MESMO
     for(i = 0; i < description.vehicles; i++){
         printf("carro [%d] - Vertices: ", i);
         for(j = 0; j <= count[i]; j++){
-            printf("%d ", car[i].rota[j]);
+            printf("%d, ",car[i].rota[j]);
+         //   printf("Trocando os de maiores custos...\n");
         }
-        printf("\nCusto Maximo: %d -> Custo Atual: %d\n", description.capacity, car[i].custo);
-        if((car[i].custo-description.capacity)>0){
-            printf("Precisa ser recalibrado\n\n");
-        }
-        else{
-            puts("");
-        }
+        printf("tam: %d, custo: %d, capacidade restante: %d\n",count[i], car[i].custo, car[i].cap);
     }
+  //  shift(car,description, numVertices, matriz, demanda, count, maior);
 
 }
 
@@ -92,12 +149,11 @@ int main(void){
     const char test8[] = "P-n55-k7.txt";
 
     char nomeArq[14];
-    strcpy(nomeArq, test8);
+    strcpy(nomeArq, test2);
     char vert[2];
     vert[0] = nomeArq[3];
     vert[1] = nomeArq[4];
     int numVertices = atoi(vert);
-    description.dimension = numVertices;
     file_test = fopen(nomeArq,"r");
 
     if(file_test== NULL)
@@ -105,7 +161,6 @@ int main(void){
 
     char *line = NULL;
     size_t len = 0;
-    size_t read;
     int i, j;
     char *aux = NULL;
     int flagDeman = 0;
@@ -116,7 +171,7 @@ int main(void){
     int contLinha = 0;
     int contColun = 0;
     
-    while ((read = getline(&line, &len, file_test)) != -1) {
+    while ((getline(&line, &len, file_test)) != -1) {
         //printf("linha: %s:\n", line);       
         if (line[0] == 'V'){
             aux = &line[10];
@@ -221,8 +276,10 @@ int main(void){
         car[i].rota = (int*)malloc(numVertices* sizeof(int));
     }    
 
-    createRota( car, description, numVertices, matriz, demanda1);
+    int count[description.vehicles];
+    int maior[description.vehicles][3];
+    createRota( car, description, numVertices, matriz, demanda1, count, maior);
 
-
-    return 0;
+    for(i = 0; i < description.vehicles; i++) free(car[i].rota);
+   return 0;
 }
