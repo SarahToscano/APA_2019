@@ -1,7 +1,7 @@
 #include <stdio.h> 
 #include <stdlib.h>
 #include <dirent.h>
-#include <string.h>
+#include <string.h> //kkkk
 #include <sys/time.h>
 #include <time.h>
 
