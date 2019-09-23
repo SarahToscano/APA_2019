@@ -84,6 +84,9 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
         car[i].custo = 0;
     }
         for (i = 0; i < description.vehicles; i++){
+            if(i>0){
+                car[i-1].rota[QVPR[i-1]+1]=0;
+            }
             printf("Carro [%d]: \n", i);
             car[i].rota[0] = 0;
             //printf("%d<%d\n", w, numVertices);
@@ -112,10 +115,10 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
                         }
                         else{
                             vertice[j].pai = w;
-                            printf("meu pai eh: %d\n", vertice[j].pai);
+                            //printf("meu pai eh: %d\n", vertice[j].pai);
                             printf("Definindo o Key como sendo %d + %d = %d\n",vertice[car[i].rota[QVPR[i]]].key, matriz[j][w], matriz[j][w]+vertice[car[i].rota[QVPR[i]]].key);
                             vertice[j].key = matriz[j][w]+vertice[melhorOP].key;
-                            printf("meu peso de %d (eu) p %d (pai) eh: %d\n", j, vertice[j].pai, vertice[j].key);
+                            //printf("meu peso de %d (eu) p %d (pai) eh: %d\n", j, vertice[j].pai, vertice[j].key);
                             /*for (k = (j-1); k >= 0;j--){
                                 //calcular custo de modo retroativo
                                 vertice[j].key += vertice[j].pai ;
