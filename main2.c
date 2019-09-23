@@ -65,7 +65,7 @@ typedef struct{
     int demanda;
 }vertice;
 
-void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test description, int matriz[][numVertices]){
+void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test description, int matriz[][numVertices], int *demanda, int *count){
     int Q[numVertices];
     int help=0;
     int w = 0, i = 0, x = 0, j = 0, melhorOP=0;
@@ -91,7 +91,7 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
             //QVPR[i]=0;
             //printf("%d<%d\n", w, numVertices);
             //printf("%d<=%d\n", vertice[w].demanda, car[i].cap);
-            while ((w < numVertices) && (vertice[w].demanda <= car[i].cap)){
+            while ((w < numVertices) && (demanda[w]<= car[i].cap)){
                 if (w == 0 || flag==0){
                     car[i].rota[0] = 0;
                     printf("Inicializando o Deposito\n\n");
@@ -104,7 +104,7 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
                 for (j = 1; j <= numVertices-1;j++){        //seleciona o vertice de menor peso partindo do anterior
                     //printf("%d, %d!=%d, %d<%d\n", Q[w], j, w, vertice[j].demanda, car[i].cap);
                     //ADICIONAR COND P ELE N FAZER CICLO (1->2) (2_>1)!!!
-                    if((Q[j]!=-1) && (j!=w) && (vertice[j].demanda <= car[i].cap)){//condicao de demanda
+                    if((Q[j]!=-1) && (j!=w) && (demanda[j] <= car[i].cap)){//condicao de demanda
                         //se existir um vertice de ligacao e ele n exceder a demanda, 
                         printf("Analisando a aresta [%d]-[%d]\n", w, j);
                         if(w==0 || flag==0){
@@ -149,8 +149,8 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
             printf("nmero QVPR[i] = %d\n",QVPR[i]);
             car[i].custo=vertice[melhorOP].key;
             printf("Custo total: %d\n", car[i].custo);
-            printf("Capacidade Restante do carro[%d]: %d - %d = ", i,car[i].cap,vertice[melhorOP].demanda);
-            car[i].cap-=vertice[melhorOP].demanda;
+            printf("Capacidade Restante do carro[%d]: %d - %d = ", i,car[i].cap,demanda[melhorOP]);
+            car[i].cap-=demanda[melhorOP];
             printf("%d\n\n", car[i].cap);            
             Q[melhorOP] = -1;
             car[i].rota[QVPR[i]] = melhorOP;
@@ -169,7 +169,7 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
         for(i=1;i<numVertices;i++){
             if(Q[i]!=-1){
                 printf("a");
-                if(vertice[i].demanda <= car[carro].cap){
+                if(demanda[i] <= car[carro].cap){
                     printf("b");
                     ++QVPR[carro];
                     car[carro].rota[QVPR[carro]] = i;
@@ -179,20 +179,24 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
         }
     }
 
-
+    
     for (i = 0; i < description.vehicles; i++){
         int aux=QVPR[i];
+        count[i]=0;
          printf("Rota do Carro %d\n",i);
          for(int h=0; h<=aux; h++){
+             count[i]++;
             printf("%d - ", car[i].rota[h]);
             if(h==aux){
                 ++QVPR[i];
                 car[i].rota[h+1]=0;
                 car[i].custo+=matriz[car[i].rota[h]][0];
-                 printf("%d - ", car[i].rota[h+1]);
+                count[i]++;
+                printf("%d - ", car[i].rota[h+1]);
             }
          }
-            puts("");
+        puts("");
+        printf("Quantidade de verticies alocados no veiculo %d: %d\n", i, --count[i]);
     }            
 }
 //CRIANDO ROTA INICIAL, E CHAMANDO AS FUNCOES DE MOVIMENTO DE VIZINHANCA
@@ -380,7 +384,8 @@ veiculo car[description.vehicles];
 //SO PRA PRINTAR MESMO
 
     for(i = 0; i < numVertices; i++){ //EXITE UM ERRO NA LEITURA  DO ARRAY DE DEMANDAS, ISSO CONSERTA
-        vertice[i].demanda = demanda[i+1];
+        demanda1[i] = demanda[i+1];
+
     }
     puts("\n");
     
@@ -389,7 +394,7 @@ veiculo car[description.vehicles];
     //CRIACAO DO ARRAY QUE MOSTRA OS VERTICES DE CADA ROTA
     
     //CHAMADA DO DIJKSTRA TEM Q VIR SO DPS DA ATUALIZAÇÃO DA DEMANDA
-    Dijkstra(numVertices, vertice, car,description, matriz);
+    Dijkstra(numVertices, vertice, car,description, matriz, demanda1, count);
 
 
 
