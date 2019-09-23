@@ -170,10 +170,20 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
             car[last].rota[QVPR[last]] = i;
         }
     }
+
+
     for (i = 0; i < description.vehicles; i++){
+        int aux=QVPR[i];
          printf("Rota do Carro %d\n",i);
-         for(int h=0; h<=QVPR[i];h++)
+         for(int h=0; h<=aux; h++){
             printf("%d - ", car[i].rota[h]);
+            if(h==aux){
+                ++QVPR[i];
+                car[i].rota[h+1]=0;
+                car[i].custo+=matriz[car[i].rota[h]][0];
+                 printf("%d - ", car[i].rota[h+1]);
+            }
+         }
             puts("");
     }            
 }
@@ -202,7 +212,9 @@ void createRota(  veiculo *car, info_test description, int numVertices, int matr
                 disp[w] = 0;
                 x = car[i].rota[count[i]-1];
                 car[i].custo += matriz[x][w]; // CALCULANDO NOVO CUSTO
+              
                 car[i].cap = car[i].cap - demanda[w]; // CALCULADO CAPACIDADE ATUAL
+               
                 count[i]++; // ARRAY QUE CORRESPONDE AO TAMANHO DE VERTICES NA ROTA EH INCREMENTADO 
             }
             w++;
