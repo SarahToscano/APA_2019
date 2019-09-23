@@ -163,11 +163,19 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
         //printf("%d - ", car[i].rota[h]);
    // }
     }
-    int last=description.vehicles-1;
-    for(i=1;i<numVertices;i++){
-        if(Q[i]!=-1){
-            ++QVPR[last];
-            car[last].rota[QVPR[last]] = i;
+    //Rearranja os vertices que sobraram para os que anda possuem capacidade, mesmo sem ser 
+    //o menor caminho
+    for(int carro=0; carro<description.vehicles;carro++){
+        for(i=1;i<numVertices;i++){
+            if(Q[i]!=-1){
+                printf("a");
+                if(vertice[i].demanda <= car[carro].cap){
+                    printf("b");
+                    ++QVPR[carro];
+                    car[carro].rota[QVPR[carro]] = i;
+                    //car[carro].custo+=matriz[car[carro].rota[QVPR[carro]-1]][car[carro].rota[QVPR[carro]]];
+                }
+            }
         }
     }
 
