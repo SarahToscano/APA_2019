@@ -168,12 +168,13 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
     for(int carro=0; carro<description.vehicles;carro++){
         for(i=1;i<numVertices;i++){
             if(Q[i]!=-1){
-                printf("a");
                 if(demanda[i] <= car[carro].cap){
-                    printf("b");
                     ++QVPR[carro];
                     car[carro].rota[QVPR[carro]] = i;
-                    //car[carro].custo+=matriz[car[carro].rota[QVPR[carro]-1]][car[carro].rota[QVPR[carro]]];
+                    printf("Alocando o vertice %d na rota %d\n",i,carro);
+                    car[carro].custo+=matriz[car[carro].rota[QVPR[carro]-1]][car[carro].rota[QVPR[carro]]];
+                    printf("Alteracao no custo para: +%d\n",matriz[car[carro].rota[QVPR[carro]-1]][car[carro].rota[QVPR[carro]]] );
+
                 }
             }
         }
@@ -183,13 +184,14 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
     for (i = 0; i < description.vehicles; i++){
         int aux=QVPR[i];
         count[i]=0;
-         printf("Rota do Carro %d\n",i);
+         printf("\nRota do Carro %d\n",i);
          for(int h=0; h<=aux; h++){
              count[i]++;
             printf("%d - ", car[i].rota[h]);
             if(h==aux){
                 ++QVPR[i];
                 car[i].rota[h+1]=0;
+                //printf("Alterando custo de %d + %d = %d\n", car[i].custo, matriz[car[i].rota[h]][0], matriz[car[i].rota[h]][0]+car[i].custo );
                 car[i].custo+=matriz[car[i].rota[h]][0];
                 count[i]++;
                 printf("%d - ", car[i].rota[h+1]);
@@ -197,6 +199,8 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
          }
         puts("");
         printf("Quantidade de verticies alocados no veiculo %d: %d\n", i, --count[i]);
+        printf("Custo do veiculo %d: %d\n", i, car[i].custo);
+        printf("Capacidade Restante do veiculo: %d\n\n", car[i].cap);
     }            
 }
 //CRIANDO ROTA INICIAL, E CHAMANDO AS FUNCOES DE MOVIMENTO DE VIZINHANCA
