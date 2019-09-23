@@ -67,6 +67,7 @@ typedef struct{
 
 void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test description, int matriz[][numVertices]){
     int Q[numVertices];
+    int help=0;
     int w = 0, i = 0, x = 0, j = 0, melhorOP=0;
     int min = 200, max = 0, k = 0;
     int QVPR[description.vehicles];//Quantidade de vértices por rota para cada carro 
@@ -81,12 +82,12 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
     for (i = 0; i < description.vehicles;i++){
         car[i].cap = description.capacity;
         car[i].custo = 0;
-
     }
         for (i = 0; i < description.vehicles; i++){
             printf("Carro [%d]: \n", i);
-            printf("%d<%d\n", w, numVertices);
-            printf("%d<=%d\n", vertice[w].demanda, car[i].cap);
+            car[i].rota[0] = 0;
+            //printf("%d<%d\n", w, numVertices);
+            //printf("%d<=%d\n", vertice[w].demanda, car[i].cap);
             while ((w < numVertices) && (vertice[w].demanda <= car[i].cap)){
                 if (w == 0){
                     car[i].rota[w] = 0;
@@ -94,24 +95,26 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
                 }
 
                 x = car[i].rota[QVPR[i] - 1];
-                printf("W=%d\n", w);
-                min = 200;   //seta p valor alto;
+               // printf("W=%d\n", w);
+                min = 20000;
+                j=1;   //seta p valor alto;
                 for (j = 1; j <= numVertices-1;j++){        //seleciona o vertice de menor peso partindo do anterior
-                    printf("%d, %d!=%d, %d<%d\n", Q[w], j, w, vertice[j].demanda, car[i].cap);
+                    //printf("%d, %d!=%d, %d<%d\n", Q[w], j, w, vertice[j].demanda, car[i].cap);
                     //ADICIONAR COND P ELE N FAZER CICLO (1->2) (2_>1)!!!
-                    if((Q[w]!=NULL) && (j!=w) && (vertice[j].demanda <= car[i].cap)){//condicao de demanda
+                    if((Q[j]!=-1) && (j!=w) && (vertice[j].demanda <= car[i].cap)){//condicao de demanda
                         //se existir um vertice de ligacao e ele n exceder a demanda, 
                         printf("Analisando a aresta [%d]-[%d]\n", w, j);
                         if(w==0){
                             vertice[j].pai = 0;
                             vertice[j].key = matriz[0][j];
                             QVPR[i]++;
-                            car[i].rota[QVPR[i]] = w;
+                            
                         }
                         else{
                             vertice[j].pai = w;
                             printf("meu pai eh: %d\n", vertice[j].pai);
-                            vertice[j].key = matriz[j][w];
+                            printf("Definindo o Key como sendo %d + %d = %d\n",vertice[car[i].rota[QVPR[i]]].key, matriz[j][w], matriz[j][w]+vertice[car[i].rota[QVPR[i]]].key);
+                            vertice[j].key = matriz[j][w]+vertice[melhorOP].key;
                             printf("meu peso de %d (eu) p %d (pai) eh: %d\n", j, vertice[j].pai, vertice[j].key);
                             /*for (k = (j-1); k >= 0;j--){
                                 //calcular custo de modo retroativo
@@ -123,7 +126,7 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
                             min = vertice[j].key;
                             melhorOP = j;
                             printf("Rota min entre [%d]->[%d] = %d\n", w, j, min);
-                            printf("MelhorOP: %d\n", melhorOP);
+                            printf("MelhorOP: %d, cujo custo eh: %d\n", melhorOP, vertice[j].key);
                         }
                         else{
                             printf("Peso entre [%d]->[%d] =(%d) eh maior q o min (%d)\n", w, j, vertice[j].key, min);
@@ -137,18 +140,32 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
             puts("");
             puts("");
             printf("Vertice retirado da lista[%d] \n", melhorOP);
-            Q[melhorOP] = NULL;
-            QVPR[i]++;
-            car[i].rota[QVPR[i]] = melhorOP;
-        
-
+            printf("Custo total: %d\n", vertice[melhorOP].key );
+            printf("Capacidade Restante do carro[%d]: %d - %d = ", i,car[i].cap,vertice[melhorOP].demanda);
+            car[i].cap-=vertice[melhorOP].demanda;
+            printf("%d\n\n", car[i].cap);
+            help++;
+            ++QVPR[i];
+            Q[melhorOP] = -1;
             
-
-            w++;
-            if(w>2)
-                w = 25;
+            car[i].rota[QVPR[i]] = melhorOP;
+            w=melhorOP;
+           
         }
-    }       
+        //printf("Rota do Carro %d\n",i);
+        //for(int h=0; h<=QVPR[i];h++){
+        //printf("%d - ", car[i].rota[h]);
+   // }
+    }
+    for (i = 0; i < description.vehicles; i++){
+         printf("Rota do Carro %d\n",i);
+         for(int h=0; h<=QVPR[i];h++)
+            printf("%d - ", car[i].rota[h]);
+            puts("");
+    }
+     
+        
+          
 }
 //CRIANDO ROTA INICIAL, E CHAMANDO AS FUNCOES DE MOVIMENTO DE VIZINHANCA
 void createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda, int *count){
