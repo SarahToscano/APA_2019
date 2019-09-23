@@ -69,14 +69,14 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
     int Q[numVertices];
     int help=0;
     int w = 0, i = 0, x = 0, j = 0, melhorOP=0;
-    int min = 200, max = 0, k = 0;
+    int min = 200, max = 0, k = 0, flag=0;
     int QVPR[description.vehicles];//Quantidade de vértices por rota para cada carro 
     for (i = 0; i < numVertices;i++){
         if(i==0)
             vertice[i].key = 0;//raiz
         vertice[i].key = 1000;
         vertice[i].pai = NULL;
-        QVPR[i] = 1;
+        QVPR[i] = 0;
         Q[i] = i;
     }
     for (i = 0; i < description.vehicles;i++){
@@ -84,20 +84,20 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
         car[i].custo = 0;
     }
         for (i = 0; i < description.vehicles; i++){
-            if(i>0){
-                car[i-1].rota[QVPR[i-1]+1]=0;
-            }
+            flag=0;
+            w=0;
             printf("Carro [%d]: \n", i);
             car[i].rota[0] = 0;
+            //QVPR[i]=0;
             //printf("%d<%d\n", w, numVertices);
             //printf("%d<=%d\n", vertice[w].demanda, car[i].cap);
             while ((w < numVertices) && (vertice[w].demanda <= car[i].cap)){
-                if (w == 0){
-                    car[i].rota[w] = 0;
+                if (w == 0 || flag==0){
+                    car[i].rota[0] = 0;
                     printf("Inicializando o Deposito\n\n");
                 }
 
-                x = car[i].rota[QVPR[i] - 1];
+               // x = car[i].rota[QVPR[i] - 1];
                // printf("W=%d\n", w);
                 min = 20000;
                 j=1;   //seta p valor alto;
@@ -107,10 +107,10 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
                     if((Q[j]!=-1) && (j!=w) && (vertice[j].demanda <= car[i].cap)){//condicao de demanda
                         //se existir um vertice de ligacao e ele n exceder a demanda, 
                         printf("Analisando a aresta [%d]-[%d]\n", w, j);
-                        if(w==0){
+                        if(w==0 || flag==0){
                             vertice[j].pai = 0;
                             vertice[j].key = matriz[0][j];
-                            QVPR[i]++;
+                            //QVPR[i]++;
                             
                         }
                         else{
@@ -139,36 +139,43 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
                         
                     }
                     puts("");
+                    
             }
+            flag=1;
             puts("");
             puts("");
             printf("Vertice retirado da lista[%d] \n", melhorOP);
-            printf("Custo total: %d\n", vertice[melhorOP].key );
+            ++QVPR[i];
+            printf("nmero QVPR[i] = %d\n",QVPR[i]);
+            car[i].custo=vertice[melhorOP].key;
+            printf("Custo total: %d\n", car[i].custo);
             printf("Capacidade Restante do carro[%d]: %d - %d = ", i,car[i].cap,vertice[melhorOP].demanda);
             car[i].cap-=vertice[melhorOP].demanda;
-            printf("%d\n\n", car[i].cap);
-            help++;
-            ++QVPR[i];
+            printf("%d\n\n", car[i].cap);            
             Q[melhorOP] = -1;
-            
             car[i].rota[QVPR[i]] = melhorOP;
             w=melhorOP;
            
         }
+        melhorOP=0;
         //printf("Rota do Carro %d\n",i);
         //for(int h=0; h<=QVPR[i];h++){
         //printf("%d - ", car[i].rota[h]);
    // }
+    }
+    int last=description.vehicles-1;
+    for(i=1;i<numVertices;i++){
+        if(Q[i]!=-1){
+            ++QVPR[last];
+            car[last].rota[QVPR[last]] = i;
+        }
     }
     for (i = 0; i < description.vehicles; i++){
          printf("Rota do Carro %d\n",i);
          for(int h=0; h<=QVPR[i];h++)
             printf("%d - ", car[i].rota[h]);
             puts("");
-    }
-     
-        
-          
+    }            
 }
 //CRIANDO ROTA INICIAL, E CHAMANDO AS FUNCOES DE MOVIMENTO DE VIZINHANCA
 void createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda, int *count){
@@ -193,18 +200,10 @@ void createRota(  veiculo *car, info_test description, int numVertices, int matr
             if(disp[w] && demanda[w] <= car[i].cap){ 
                 car[i].rota[count[i]] = w;
                 disp[w] = 0;
-              
                 x = car[i].rota[count[i]-1];
-              
                 car[i].custo += matriz[x][w]; // CALCULANDO NOVO CUSTO
-              
                 car[i].cap = car[i].cap - demanda[w]; // CALCULADO CAPACIDADE ATUAL
-               
-                count[i]++; // ARRAY QUE CORRESPONDE AO TAMANHO DE VERTICES NA ROTA EH INCREMENTADO
-                
-                    
-
-                
+                count[i]++; // ARRAY QUE CORRESPONDE AO TAMANHO DE VERTICES NA ROTA EH INCREMENTADO 
             }
             w++;
         }
