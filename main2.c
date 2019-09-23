@@ -174,7 +174,7 @@ void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test descrip
                     printf("Alocando o vertice %d na rota %d\n",i,carro);
                     car[carro].custo+=matriz[car[carro].rota[QVPR[carro]-1]][car[carro].rota[QVPR[carro]]];
                     printf("Alteracao no custo para: +%d\n",matriz[car[carro].rota[QVPR[carro]-1]][car[carro].rota[QVPR[carro]]] );
-
+                    Q[i]=-1;//retira o vv=ertice da lista de disponibilidade
                 }
             }
         }
@@ -279,7 +279,7 @@ int main(void){
     const char test8[] = "P-n55-k7.txt";
 
     char nomeArq[14];
-    strcpy(nomeArq, test1);
+    strcpy(nomeArq, test4);
     char vert[2];
     vert[0] = nomeArq[3];
     vert[1] = nomeArq[4];
