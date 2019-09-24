@@ -269,17 +269,17 @@ int main(void){
 
     FILE *file_test;
 
-    const char test1[] = "P-n19-k2.txt";
-    const char test2[] = "P-n16-k8.txt";
-    const char test3[] = "P-n20-k2.txt";
-    const char test4[] = "P-n23-k8.txt"; 
-    const char test5[] = "P-n45-k5.txt";
-    const char test6[] = "P-n50-k10.txt"; 
-    const char test7[] = "P-n51-k10.txt"; 
-    const char test8[] = "P-n55-k7.txt";
+    const char test1[] = "P-n19-k2.txt"; //OK
+    const char test2[] = "P-n16-k8.txt";//falta 14
+    const char test3[] = "P-n20-k2.txt"; //OK
+    const char test4[] = "P-n23-k8.txt"; //falta 17 e 18
+    const char test5[] = "P-n45-k5.txt"; //OK
+    const char test6[] = "P-n50-k10.txt"; //OK
+    const char test7[] = "P-n51-k10.txt"; //ok
+    const char test8[] = "P-n55-k7.txt"; //54
 
     char nomeArq[14];
-    strcpy(nomeArq, test4);
+    strcpy(nomeArq, test7);
     char vert[2];
     vert[0] = nomeArq[3];
     vert[1] = nomeArq[4];
