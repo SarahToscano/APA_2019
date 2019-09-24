@@ -1,7 +1,7 @@
 #include "vizinhancas.h"
 
 void exchange(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda,int *count){
-//    printf("exchange !!\n");
+    printf("exchange !!\n");
     int i, j, j2, l, l2, m;
     int ver1, atualdif = 0;
     vnd dif;
@@ -10,7 +10,7 @@ void exchange(veiculo *car, info_test description, int numVertices, int matriz[]
     int jaVisitados[description.vehicles];
     for(i = 0; i < description.vehicles; i++){
     //    printf("carro: %d\n", i);
-        if(count[i] > 3){
+        if(count[i] >= 3){
             for(j = 1; j < count[i]; j++){
             //    printf("\tvertice de posicao %d: %d\n",j, car[i].rota[j]);
                 for(l = 1; l < count[i] ; l++){
@@ -106,7 +106,7 @@ void exchange(veiculo *car, info_test description, int numVertices, int matriz[]
 
 
 void swap(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda,int *count){
-//    printf("swap!\n");
+    printf("swap!\n");
     int i, j, j2, k, l, l2, m;
     int ver1, ver2, atualdif = 0;
     vnd dif;
@@ -181,8 +181,9 @@ void swap(veiculo *car, info_test description, int numVertices, int matriz[][num
             car[dif.carro2].cap -= demanda[car[dif.carro2].rota[m+1]];
             car[dif.carro2].custo += matriz[car[dif.carro2].rota[m]][car[dif.carro2].rota[m+1]];
         }
-        int custoSoma = 0;
         /*
+        int custoSoma = 0;
+        
         for(i = 0; i < description.vehicles; i++){
             printf("carro [%d] - Vertices: ", i);
             for(j = 0; j <= count[i]; j++){
@@ -204,7 +205,7 @@ void swap(veiculo *car, info_test description, int numVertices, int matriz[][num
 
 
 void shift(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda,int *count){
-//   printf("shift!!\n");
+   printf("shift!!\n");
     int i, j, j2, k, l, l2, m;
     int ver1, ver2, atualdif = 0;
     vnd dif;
@@ -255,7 +256,7 @@ void shift(veiculo *car, info_test description, int numVertices, int matriz[][nu
     }
  //   printf("teste\n");
     if(flagMelhora){
-    //    printf("melhora shift!!\n");
+        printf("melhora shift!!\n");
     //    printf("carro %d vertice %d e carro %d em aresta %d-%d\n",dif.carro1, dif.posiVertice, dif.carro2, car[dif.carro2].rota[dif.posiAresta1], car[dif.carro2].rota[dif.posiAresta2] );
         car[dif.carro1].cap = description.capacity;
         car[dif.carro2].cap = description.capacity;
@@ -282,23 +283,26 @@ void shift(veiculo *car, info_test description, int numVertices, int matriz[][nu
             car[dif.carro2].cap -= demanda[car[dif.carro2].rota[m+1]];
             car[dif.carro2].custo += matriz[car[dif.carro2].rota[m]][car[dif.carro2].rota[m+1]];
         }
-        /*
-        int custoSoma = 0;
-        for(i = 0; i < description.vehicles; i++){
-            printf("carro [%d] - Vertices: ", i);
-            for(j = 0; j <= count[i]; j++){
-                printf("%d, ",car[i].rota[j]);
-            //   printf("Trocando os de maiores custos...\n");
-            }
-        printf("tam: %d, custo: %d, capacidade restante: %d\n",count[i], car[i].custo, car[i].cap);
-        }
-        for(i = 0; i < description.vehicles; i++){
-            custoSoma += car[i].custo;
-        }
-        printf("custo final: %d\n", custoSoma);
-        */
+        
+        
+        
         shift(car,description, numVertices, matriz, demanda, count);
 
     }
     else swap(car,description, numVertices, matriz, demanda, count);
+    /*
+    int custoSoma = 0;
+    for(i = 0; i < description.vehicles; i++){
+        printf("carro [%d] - Vertices: ", i);
+        for(j = 0; j <= count[i]; j++){
+            printf("%d, ",car[i].rota[j]);
+        //   printf("Trocando os de maiores custos...\n");
+        }
+    printf("tam: %d, custo: %d, capacidade restante: %d\n",count[i], car[i].custo, car[i].cap);
+    }
+    for(i = 0; i < description.vehicles; i++){
+        custoSoma += car[i].custo;
+    }
+    printf("custo final: %d\n", custoSoma);
+    */
 }
