@@ -1,6 +1,6 @@
 #include "construtiva.h"
 
-void construtiva(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda1, int *count, vertice *vertices){
+int construtiva(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda1, int *count, vertice *vertices){
     int custoSoma = 0, i,j;
 
     /*
@@ -18,7 +18,7 @@ void construtiva(veiculo *car, info_test description, int numVertices, int matri
     }
     */
     int somaTam = 0;
-    createRota( car, description, numVertices, matriz, demanda1, count);
+    description.vehicles = createRota( car, description, numVertices, matriz, demanda1, count);
     /*
     for(int i = 0; i < description.vehicles; i++) somaTam += count[i];
     while(somaTam != numVertices + description.vehicles - 1){
@@ -54,11 +54,12 @@ void construtiva(veiculo *car, info_test description, int numVertices, int matri
         custoSoma += car[i].custo;
     }
     printf("custo final: %d\n", custoSoma);
+    return description.vehicles;
 }
 
-void heuristica(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda1, int *count, int ideal){
+int heuristica(veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda1, int *count, int ideal){
     int custoSoma = 0, i, j;
-    createRota( car, description, numVertices, matriz, demanda1, count);
+    description.vehicles = createRota( car, description, numVertices, matriz, demanda1, count);
     for(i = 0; i < description.vehicles; i++){
         printf("carro [%d] - Vertices: ", i);
         for(j = 0; j <= count[i]; j++){
@@ -93,6 +94,7 @@ void heuristica(veiculo *car, info_test description, int numVertices, int matriz
         custoSoma += car[i].custo;
     }
     printf("custo final: %d\n", custoSoma);
+    return description.vehicles;
 }
 
 int main(void){
@@ -110,7 +112,7 @@ int main(void){
     const char test6[] = "P-n50-k10.txt"; 
     const char test7[] = "P-n51-k10.txt"; 
     const char test8[] = "P-n55-k7.txt";
-    int arqint = 1;
+    int arqint = 4;
     char nomeArq[14];
     int ideal;
 
@@ -270,23 +272,26 @@ int main(void){
 //   printf("%lu\n", stop.tv_usec - start.tv_usec);
 //   puts("Todos os arquivos de leitura para testes foram fechados.");
 
-    veiculo car[description.vehicles];
+    veiculo car[description.vehicles + 1];
     for(i =0; i < description.vehicles; i++){
         car[i].rota = (int*)malloc(numVertices* sizeof(int));
     }    
 
-    int count[description.vehicles];
+    int count[description.vehicles +1];
     
-    construtiva( car, description, numVertices, matriz, demanda1, count, vertices);
-//    heuristica(car, description, numVertices, matriz, demanda1, count, ideal);
-    
+    description.vehicles = construtiva( car, description, numVertices, matriz, demanda1, count, vertices);
+//  description.vehicles =   heuristica(car, description, numVertices, matriz, demanda1, count, ideal);
+    printf("num de veiculos velhos %d\n", description.vehicles);
 
 
-    for(i = 0; i < description.vehicles; i++) free(car[i].rota);
+
+
+//    for(i = 0; i < description.vehicles; i++) free(car[i].rota);
 
     fclose(file_test);
     tempo[1] = clock();
     double tempoMicro = (tempo[1] - tempo[0]) * 1000000/ CLOCKS_PER_SEC;
-    printf("tempo: %lf\n", tempoMicro);
-   return 0;
+    printf("tempo em microsegundos: %lf\n", tempoMicro);
+    puts("a final");
+   return 1;
 }
