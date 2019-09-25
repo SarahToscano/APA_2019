@@ -1,6 +1,6 @@
 #include "construtiva.h"
 
-void createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda, int *count){
+int createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda, int *count){
     printf("construcao de rota\n");
     int disp[numVertices];
     int contRota = 0;
@@ -52,13 +52,33 @@ void createRota(  veiculo *car, info_test description, int numVertices, int matr
         w = 1;
         i++;
     }
-  
+    int somaTam = 0;
     for(i = 0; i < description.vehicles; i++){
- 
+        somaTam += count[i];
         car[i].rota[count[i]] = 0;
         car[i].custo += matriz[car[i].rota[count[i]-1]][0];
     } 
-    
+    if( somaTam != numVertices + description.vehicles - 1){
+        car[i].cap = description.capacity;
+        car[i].custo = 0;
+        car[i].rota[0] = 0;
+        j = 1;
+        count[i] = 1;
+        description.vehicles++;
+        printf("num de veiculos novos %d\n", description.vehicles);
+        for(w = 1; w < numVertices; w++){
+            if(disp[w]){
+                puts("a");
+                disp[w] = 0;
+                car[i].custo += matriz[w][car[i].rota[j-1]];
+                car[i].rota[j++] = w;
+                count[i]++;
+                car[i].cap -= demanda[w];
+            }
+        }
+        car[i].rota[j] = 0;
+        car[i].custo += matriz[0][car[i].rota[j-1]];
+    }
     //SO PRA PRINTAR MESMO
     /*
     for(i = 0; i < description.vehicles; i++){
@@ -76,6 +96,7 @@ void createRota(  veiculo *car, info_test description, int numVertices, int matr
     printf("custo final: %d\n", custoSoma);
     custoSoma = 0;
     */
+   return description.vehicles;
 }
 void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test description, int matriz[][numVertices], int *demanda, int *count){
     int Q[numVertices];
