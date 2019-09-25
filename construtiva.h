@@ -8,6 +8,6 @@ typedef struct{
     int demanda;
 }vertice;
 
-void createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda, int *count);
+int createRota(  veiculo *car, info_test description, int numVertices, int matriz[][numVertices], int *demanda, int *count);
 void Dijkstra(int numVertices, vertice *vertice, veiculo *car, info_test description, int matriz[][numVertices], int *demanda, int *count);
 #endif
